@@ -6,13 +6,14 @@ COPY . .
 
 RUN apk add --no-cache gcc git libc-dev
 RUN go mod tidy
-RUN go build
+RUN go build -a -ldflags '-extldflags "-static"' .
 
 FROM alpine:3.9
 
 LABEL mainteiner="Vanya Andreychuk <vandreychyk@gmail.com>"
-
+RUN apk add --no-cache \
+		ca-certificates
 WORKDIR /root/
 COPY --from=0 /root/time_management .
-RUN apk add openssl
+
 CMD ["./time_management"]
