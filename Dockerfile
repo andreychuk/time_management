@@ -8,7 +8,7 @@ RUN apk add --no-cache gcc git libc-dev
 RUN go mod tidy
 RUN go build
 
-FROM aplpine:3.9
+FROM alpine:3.9
 
 LABEL mainteiner="Vanya Andreychuk <vandreychyk@gmail.com>"
 
