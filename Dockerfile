@@ -14,4 +14,5 @@ LABEL mainteiner="Vanya Andreychuk <vandreychyk@gmail.com>"
 
 WORKDIR /root/
 COPY --from=0 /root/time_management .
+RUN apk add openssl
 CMD ["./time_management"]
