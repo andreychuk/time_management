@@ -20,5 +20,5 @@ Log time to Redmine issues
     endpoint=HOST_TO_YOUR_REDMINE
     apikey=YOUR_API_KEY
 
-    docker run -i --rm --env-file .env-conf andreychuk/time-management --issueID=issue_id --hours=3.5 --activity=activity_id
+    docker run -i --rm --env-file .env-conf andreychuk/time-management ./time_management --issueID=issue_id --hours=3.5 --activity=activity_id
 
