@@ -1,19 +1,31 @@
-FROM golang:1.12-alpine3.9
+FROM golang:1.12-alpine3.9 as builder
 
-WORKDIR /root
+RUN mkdir /user && \
+    echo 'nobody:x:65534:65534:nobody:/:' > /user/passwd && \
+     echo 'nobody:x:65534:' > /user/group
 
-COPY . .
+RUN apk add --no-cache ca-certificates git
 
-RUN apk add --no-cache gcc git libc-dev
-RUN go mod tidy
-RUN go build -a -ldflags '-extldflags "-static"' .
+WORKDIR /src
 
-FROM alpine:3.9
+COPY ./go.mod ./go.sum ./
+RUN go mod download
 
-LABEL mainteiner="Vanya Andreychuk <vandreychyk@gmail.com>"
-RUN apk add --no-cache \
-		ca-certificates
-WORKDIR /root/
-COPY --from=0 /root/time_management .
+COPY ./ ./
 
-CMD ["./time_management"]
+RUN CGO_ENABLED=0 go build \
+    -installsuffix 'static' \
+    -o /time_management .
+
+FROM scratch AS final
+
+COPY --from=builder /user/group /user/passwd /etc/
+
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+
+COPY --from=builder /time_management /time_management
+
+
+USER nobody:nobody
+
+CMD ["/time_management"]
